@@ -1,3 +1,5 @@
+#### Setar um Segredo
+
 ###### Na raíz do projeto digitar o seguinte comando para usar segredos em Asp.NET Core:
 ```
 dotnet user-secrets init
@@ -5,7 +7,7 @@ dotnet user-secrets init
 
 Comando para setar um segredo:
 ```
-dotnet user-secrets set "email:senha" "123456"
+dotnet user-secrets set "DatabasePassword" "123456"
 ```
 
 Consultar Segredos definidos no projeto:
@@ -18,39 +20,68 @@ Obs: Os segredos ficam salvos no computador local no seguinte  diretório (não 
  %APPDATA%/Microsoft/UserSecrets
 ```
 
+#### Recuperar um Segredo
 
-Recuperar o valor de um segredo (Startup):
+Vamos usar como exemplo a conexão com banco de dados. 
+
+Em aplicações .NET Core, a ConnectionString é estabelecida no arquivo appsettings.json, localizado na raíz do projeto:
+
 ```
-senhaEmail = Configuration["email:senha"];
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },  
+  "AllowedHosts": "*",
+  
+  "MyDataBaseConn": {
+    "ConnectionStrings": "Server=localhost;Database=MyDataBase;user=admin"
+  }
+}
 ```
 
-Recuperar valor no Controller:
-
+Perceba que não expomos a senha do banco de dados no código da aplicação. 
+Vamos recuperá-la através do Segredo definido anteriormente:
 
 ###### Startup.cs::
 ```
 public class Startup
-{        
-  public static string senhaEmail{ get; set; }
-
-  public void ConfigureServices(IServiceCollection services)
-  {       
-      senhaEmail = Configuration["email:senha"];                        
-  }
+{
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+    public IConfiguration Configuration { get; }       
 }
 ```     
 
 ###### Controller:
 ```
-public class EmailController: Controller
+public class HomeController: Controller
 {
-  private string _senhaEmail;
-  public EmailController()
-  {
-     _senhaEmail = Startup.senhaEmail;
-  }
+    private IConfiguration _configuration { get; }
+    public HomeController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+    
+    public string ConnectionStrings()
+    {
+        var builder = new SqlConnectionStringBuilder(
+                _configuration.GetSection("MyDataBaseConn").GetSection("ConnectionStrings").Value);
+
+        builder.Password = _configuration["DatabasePassword"];  // => Recuperando o segredo 
+        string connection = builder.ConnectionString;
+        return connection;
+    }
+
 }
 ```
+
+#### Outros comandos
 
 Remover um segredo específico:
 ```
