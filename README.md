@@ -1,4 +1,6 @@
-#### Setar um Segredo
+## Secret para Desenvolvimento
+
+Importante observar que o uso desta ferramenta é para ambiente de desenvolvimento. Você terá problemas se tentar utilizar em ambiente de produção.
 
 ###### Na raíz do projeto digitar o seguinte comando para usar segredos em Asp.NET Core:
 ```
