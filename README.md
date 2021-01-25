@@ -1,6 +1,7 @@
 ## Secret para Desenvolvimento
 
 Importante observar que o uso desta ferramenta é para ambiente de desenvolvimento. Você terá problemas se tentar utilizar em ambiente de produção.
+<https://docs.microsoft.com/pt-br/aspnet/core/security/app-secrets?view=aspnetcore-5.0&tabs=windows>
 
 ###### Na raíz do projeto digitar o seguinte comando para usar segredos em Asp.NET Core:
 ```
